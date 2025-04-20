@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Domain.Contracts;
 using Domain.Entities;
+using services.Specifications;
 using Services.Abstraction;
 using Shared;
 
@@ -29,17 +30,20 @@ namespace services
             return result;
         }
 
-        public async Task<IEnumerable<ProductResultDto>> GetAllProductsAsync()
+        public async Task<PaginatedResponse<ProductResultDto>> GetAllProductsAsync(ProductSpecificationParamter productSpecificationParamter)
         {
-
-            var products = await _unit_Of_Work.GetRepository<Product, int>().GetAllAsync();
+            var spec = new ProductWithBrandsAndTypesSpecifications(productSpecificationParamter);
+            var specCount = new ProductWithCountSpecification(productSpecificationParamter);
+            var products = await _unit_Of_Work.GetRepository<Product, int>().GetAllAsync(spec);
+            var count = await _unit_Of_Work.GetRepository<Product, int>().CountAsync(specCount);
             var result = _mapper.Map<IEnumerable<ProductResultDto>>(products);
-            return result;
+            return new PaginatedResponse<ProductResultDto>(productSpecificationParamter.PageIndex, productSpecificationParamter.PageSize,count,result);
         }
 
         public async  Task<ProductResultDto> GetProductByIdAsync(int id)
         {
-            var product = await _unit_Of_Work.GetRepository<Product, int>().GetAsync(id);
+            var spec = new ProductWithBrandsAndTypesSpecifications(id);
+            var product = await _unit_Of_Work.GetRepository<Product, int>().GetAsync(spec);
             if (product is null) return null;
 
             var result = _mapper.Map<ProductResultDto>(product);
