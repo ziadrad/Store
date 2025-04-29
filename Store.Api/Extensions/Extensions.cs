@@ -1,6 +1,9 @@
 ﻿using Domain.Contracts;
+using Domain.Entities.identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Presistants;
+using Presistants.identity;
 using services;
 using Shared.ErrorsModels;
 using Store.Api.Middlewares;
@@ -17,6 +20,7 @@ namespace Store.Api.Extensions
 
             services.AddInfrastructureServices(configuration);
             services.AddAppServices();
+            services.AddIndetityServices();
 
             services.ConfigureServices();
 
@@ -26,6 +30,13 @@ namespace Store.Api.Extensions
         private static IServiceCollection AddBuiltInServices(this IServiceCollection services)
         {
             services.AddControllers();
+
+            return services;
+        }
+        private static IServiceCollection AddIndetityServices(this IServiceCollection services)
+        {
+            services.AddIdentity<AppUser,IdentityRole>()
+                .AddEntityFrameworkStores<StoreIdentityDbContext>();
 
             return services;
         }
@@ -80,7 +91,7 @@ namespace Store.Api.Extensions
             app.UseStaticFiles();
             app.UseHttpsRedirection();
 
-             app.UseGlobalErrorHandlingMiddleware();
+            app.UseGlobalErrorHandlingMiddleware();
 
             app.UseAuthorization();
 
@@ -95,13 +106,16 @@ namespace Store.Api.Extensions
         {
             using var scope = app.Services.CreateScope();
             var dbintializer = scope.ServiceProvider.GetRequiredService<IDBIntializer>();
+
             await dbintializer.IntializeDbAsync();
+            await dbintializer.IntializeIdentityAsync();
             return app;
         }
 
-        public static  WebApplication UseGlobalErrorHandlingMiddleware(this WebApplication app)
+        public static WebApplication UseGlobalErrorHandlingMiddleware(this WebApplication app)
         {
             app.UseMiddleware<GlobalErrorHandlingMiddleware>();
             return app;
         }
     }
+}

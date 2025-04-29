@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Contracts
+namespace Domain.Exceptions
 {
-    public interface IDBIntializer
+    public class UnAuthorizedException(string messag="Bad Email Or Password") : Exception(messag)
     {
-        Task IntializeDbAsync();
-        Task IntializeIdentityAsync();
     }
 }

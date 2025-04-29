@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Services.Abstraction
+namespace Shared
 {
     public class BasketItemDto
     {
