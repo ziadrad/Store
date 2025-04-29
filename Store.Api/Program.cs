@@ -5,6 +5,7 @@ using Presistants;
 using Presistants.Data;
 using services;
 using Services.Abstraction;
+using Store.Api.Middlewares;
 
 namespace Store.Api
 {
@@ -41,6 +42,7 @@ namespace Store.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseMiddleware<GlobalErrorHandlingMiddleware>();
             app.UseStaticFiles();
             app.UseHttpsRedirection();
 
