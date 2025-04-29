@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 using Domain.Entities.identity;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Services.Abstraction;
 using Shared;
 
 namespace services
 {
-    public class AuthService(UserManager<AppUser> userManager) : IAuthService
+    public class AuthService(UserManager<AppUser> userManager,IConfiguration configuration) : IAuthService
     {
      
 
@@ -82,13 +83,13 @@ namespace services
 
 
 
-            var secretkey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("STAYSTRONGSTAYSTRONGSTAYSTRONGSTAYSTRONGSTAYSTRONGSTAYSTRONGSTAYSTRONGSTAYSTRONG")); 
+            var secretkey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtOptions:SecretKey"])); 
 
             var token = new JwtSecurityToken(
-            issuer: "https://localhost:7035",
-            audience: "MyAudienc",
+            issuer: configuration["JwtOptions:Issuer"],
+            audience: configuration["JwtOptions:Audience"] ,
             claims: authClaim,
-            expires: DateTime.UtcNow.AddDays(value: 5),
+            expires: DateTime.UtcNow.AddDays(double.Parse(configuration[key: "JwtOptions:DurationInDays"])),
             signingCredentials: new SigningCredentials(secretkey , SecurityAlgorithms.HmacSha256Signature)
 
             );

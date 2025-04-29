@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Domain.Contracts;
 using Domain.Entities;
 using Domain.Entities.identity;
+using Domain.Entities.OrderModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -79,7 +80,20 @@ namespace Presistants
                 }
 
             }
-       
+            if (!_context.DeliveryMethods.Any())
+            {
+                var data = await File.ReadAllTextAsync(@"..\Infrastructure\Presistants\Data\Seeds\delivery.json");
+
+                var DeliveryMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(data);
+
+                if (DeliveryMethods is not null && DeliveryMethods.Any())
+                {
+                    await _context.DeliveryMethods.AddRangeAsync(DeliveryMethods);
+                    await _context.SaveChangesAsync();
+                }
+
+            }
+
         }
 
         public async Task IntializeIdentityAsync()

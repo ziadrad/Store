@@ -1,7 +1,10 @@
 ﻿using Domain.Contracts;
 using Domain.Entities.identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Presistants;
 using Presistants.identity;
 using services;
@@ -16,9 +19,8 @@ namespace Store.Api.Extensions
         {
             services.AddBuiltInServices();
             services.AddSwaggerServices();
-
-
-            services.AddInfrastructureServices(configuration);
+            services.ConfigureJwt();
+                    services.AddInfrastructureServices(configuration);
             services.AddAppServices();
             services.AddIndetityServices();
 
@@ -30,6 +32,27 @@ namespace Store.Api.Extensions
         private static IServiceCollection AddBuiltInServices(this IServiceCollection services)
         {
             services.AddControllers();
+
+            return services;
+        }
+        private static IServiceCollection ConfigureJwt(this IServiceCollection services)
+        {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+
+
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+            });
+
 
             return services;
         }
