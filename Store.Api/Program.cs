@@ -1,11 +1,14 @@
 
 using Domain.Contracts;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Presistants;
 using Presistants.Data;
 using services;
 using Services.Abstraction;
+using Shared.ErrorsModels;
 using Store.Api.Middlewares;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Store.Api
 {
@@ -30,7 +33,26 @@ namespace Store.Api
             builder.Services.AddAutoMapper(typeof(AssemblyReferance).Assembly);
             builder.Services.AddScoped<IServicesManager, ServiceManager>();
             builder.Services.AddScoped<IDBIntializer,DBIntializer>();
+            builder.Services.Configure<ApiBehaviorOptions>(config => {
 
+            config.InvalidModelStateResponseFactory = (actioncontext) =>
+            {
+            var errors = actioncontext.ModelState.Where(m => m.Value.Errors.Any())
+                .Select(m => new ValidationError()
+                {
+
+                    Field = m.Key,
+                    Errors = m.Value.Errors.Select(errors => errors.ErrorMessage)
+                });
+
+                var response = new ValidationErrorResponse()
+                {
+                    Errors = errors
+                };
+                return new BadRequestObjectResult(error: response);
+
+                };
+            });
             var app = builder.Build();
 
           using  var scope = app.Services.CreateScope();

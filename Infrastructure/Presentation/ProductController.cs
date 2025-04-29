@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstraction;
 using Shared;
@@ -26,7 +27,7 @@ namespace Presentation
         public async Task<IActionResult> GetProductById(int id)
         {
             var result = await _servicesManager.productServices.GetProductByIdAsync(id);
-            if (result is null) return NotFound(); // 404
+            if (result is null) throw new ProductNotFoundExceptions(id); // 404
             return Ok(result);
         }
 
