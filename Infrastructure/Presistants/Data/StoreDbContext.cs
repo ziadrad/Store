@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.Entities.OrderModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Presistants.Data
@@ -14,6 +15,13 @@ namespace Presistants.Data
         {
             
         }
+        public DbSet<Order> Orders { get; set; }
+       
+        public DbSet<OrderItem> OrderItems { get; set; }
+     
+        public DbSet<DeliveryMethod> DeliveryMethods { get; set; }
+
+
         public DbSet<Product> Product { get; set; }
         public DbSet<ProductType> ProductType { get; set; }
 
