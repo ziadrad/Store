@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Contracts
+namespace Domain.Exceptions
 {
-    public interface IDBIntializer
+    public class BadRequestException(string message):Exception(message)
     {
-        Task IntializeDbAsync();
-        Task IntializeIdentityAsync();
     }
 }
